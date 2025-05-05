@@ -19,6 +19,7 @@ const userRoutes = require('./routes/userRoutes');
 const questRoutes = require('./routes/questRoutes');
 const tipRoutes = require('./routes/tipRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const miscRoutes = require('./routes/miscRoutes'); // ✅ Added
 
 // --- Basic Configuration ---
 const PORT = process.env.PORT || 5001; // Use environment variable or default
@@ -32,15 +33,12 @@ connectDB();
 app.use(cors()); // Enable Cross-Origin Resource Sharing
 app.use(express.json()); // Middleware to parse JSON bodies
 
-// --- API Routes ---
-// Apply JWT authentication middleware to protected routes
-// Apply rate limiting and cooldown where necessary
-
-// Public routes (or apply auth selectively)
+// --- Public Routes ---
+app.use('/', miscRoutes); // ✅ Added - for /health and /props/trending
 app.use('/api/price', priceRoutes);
 app.use('/api/chat', chatRoutes); // Chat history endpoint
 
-// Protected routes (Apply JWT Auth)
+// --- Protected Routes (Apply JWT Auth) ---
 app.use('/api/slips', authenticateToken, slipRoutes); // History needs auth
 app.use('/api/submit-slip', authenticateToken, rateLimiter, slipCooldown, slipRoutes); // Submit needs auth + rate limits
 app.use('/api/slip-result', authenticateToken, slipRoutes); // Result needs auth
